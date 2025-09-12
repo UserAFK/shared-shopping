@@ -1,1 +1,9 @@
-*.vs
+bin/
+obj/
+.vs/
+node_modules/
+dist/
+.env
+.vscode/
+*.user
+*.suo
