@@ -30,18 +30,13 @@ services:
     volumes: ["zookeeper-data:/bitnami"]
 
   kafka:
-    image: bitnami/kafka:latest
+    image: bitnami/kafka:3.5.1
     environment:
+      - BITNAMI_DEBUG=true
       - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
       - ALLOW_PLAINTEXT_LISTENER=yes
       - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092
       - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092
-      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
-      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CLIENT:PLAINTEXT,EXTERNAL:PLAINTEXT
-      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=0@kafka:9093
-      - KAFKA_CFG_PROCESS_ROLES=${KAFKA_CFG_PROCESS_ROLES}
-      - KAFKA_CFG_NODE_ID=${KAFKA_CFG_NODE_ID}
-      - KAFKA_CLUSTER_ID=nZ017F8WSDi_VSziDATxJA
     depends_on:
       - zookeeper
     ports: ["9092:9092"]
