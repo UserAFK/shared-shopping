@@ -1,0 +1,29 @@
+name: CI
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    #services:
+      # optional ephemeral services for tests (SQL)...
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '9.0.x'
+      - name: Restore & Build
+        run: dotnet restore && dotnet build --no-restore --configuration Release
+      - name: Run Tests
+        run: dotnet test --no-build --verbosity normal
+      - name: Build frontend
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+        run: |
+          cd frontend
+          npm ci
+          npm run build
+      #- name: Build Docker images (optional)
+      #  run: docker compose -f docker/docker-compose.yml build
