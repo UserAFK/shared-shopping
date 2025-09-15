@@ -12,12 +12,11 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: '9.0.x'
+          dotnet-version: '9.0.305'
       - name: Restore & Build
         run: dotnet restore && dotnet build --no-restore --configuration Release
       - name: Run Tests
-        run: dotnet test --no-build --verbosity detailed        
-        working-directory: src/Tests/SharedShopping.Tests
+        run: dotnet test --no-build --verbosity detailed
       - name: Setup frontend
         uses: actions/setup-node@v4
         with:
