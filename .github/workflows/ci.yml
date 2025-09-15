@@ -16,7 +16,7 @@ jobs:
       - name: Restore & Build
         run: dotnet restore && dotnet build --no-restore --configuration Release
       - name: Run Tests
-        run: dotnet test --no-build --verbosity normal
+        run: dotnet test --no-build --verbosity detailed
       - name: Setup frontend
         uses: actions/setup-node@v4
         with:
