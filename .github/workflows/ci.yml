@@ -20,10 +20,7 @@ jobs:
       - name: Build frontend
         uses: actions/setup-node@v4
         with:
-          node-version: 18
-        run: |
-          cd frontend
-          npm ci
-          npm run build
+          node-version: 20
+        run: cd frontend && npm ci && npm run build
       #- name: Build Docker images (optional)
       #  run: docker compose -f docker/docker-compose.yml build
