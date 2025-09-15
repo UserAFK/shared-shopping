@@ -17,8 +17,8 @@ jobs:
         run: dotnet restore && dotnet build --no-restore --configuration Release
       - name: Run Tests
         run: dotnet test --no-build --verbosity normal
+      - uses: actions/setup-node@v4
       - name: Build frontend
-        uses: actions/setup-node@v4
         with:
           node-version: 20
         run: cd frontend && npm ci && npm run build
