@@ -1,0 +1,98 @@
+version: "3.8"
+services:
+
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=${SA_PASSWORD}
+      - MSSQL_PID=Developer
+    ports:
+      - "1433:1433"
+    volumes:
+      - mssql-data:/var/opt/mssql
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P $SA_PASSWORD -Q \"SELECT 1\""]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7
+    ports: ["6379:6379"]
+    volumes: ["redis-data:/data"]
+
+  zookeeper:
+    image: bitnami/zookeeper:latest
+    environment:
+      - ALLOW_ANONYMOUS_LOGIN=yes
+    ports: ["2181:2181"]
+    volumes: ["zookeeper-data:/bitnami"]
+
+  kafka:
+    image: bitnami/kafka:latest
+    environment:
+      - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
+      - ALLOW_PLAINTEXT_LISTENER=yes
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092
+      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CLIENT:PLAINTEXT,EXTERNAL:PLAINTEXT
+      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=0@kafka:9093
+      - KAFKA_CFG_PROCESS_ROLES=${KAFKA_CFG_PROCESS_ROLES}
+      - KAFKA_CFG_NODE_ID=${KAFKA_CFG_NODE_ID}
+      - KAFKA_CLUSTER_ID=nZ017F8WSDi_VSziDATxJA
+    depends_on:
+      - zookeeper
+    ports: ["9092:9092"]
+    volumes: ["kafka-data:/bitnami"]
+
+  seq:
+    image: datalust/seq:latest
+    environment:
+      - ACCEPT_EULA=Y
+      - SEQ_FIRSTRUN_ADMINPASSWORD=${SEQ_FIRSTRUN_ADMINPASSWORD}
+    ports: ["5341:80"]
+    volumes: ["seq-data:/data"]
+
+  # placeholders for your services — build from local Dockerfiles
+  api-gateway:
+    build:
+      context: ../src/Api.Gateway
+      dockerfile: Dockerfile
+    depends_on: [sqlserver, kafka]
+    ports: ["8080:80"]
+
+  command-service:
+    build:
+      context: ../src/Service.Command
+      dockerfile: Dockerfile
+    depends_on: [sqlserver, kafka, redis]
+    ports: ["5001:80"]
+
+  query-service:
+    build:
+      context: ../src/Service.Query
+      dockerfile: Dockerfile
+    depends_on: [sqlserver, redis]
+    ports: ["5002:80"]
+
+  worker:
+    build:
+      context: ../src/Worker.PriceFetcher
+      dockerfile: Dockerfile
+    depends_on: [kafka, sqlserver, redis]
+
+  frontend:
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile
+    ports: ["3000:80"]
+    depends_on: [api-gateway]
+
+volumes:
+  mssql-data:
+  redis-data:
+  zookeeper-data:
+  kafka-data:
+  seq-data:
