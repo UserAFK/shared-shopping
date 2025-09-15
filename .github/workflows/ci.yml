@@ -17,7 +17,7 @@ jobs:
         run: dotnet restore && dotnet build --no-restore --configuration Release
       - name: Run Tests
         run: dotnet test --no-build --verbosity detailed        
-        working-directory: ./Tests/SharedShopping.Tests
+        working-directory: Tests/SharedShopping.Tests
       - name: Setup frontend
         uses: actions/setup-node@v4
         with:
