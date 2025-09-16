@@ -6,9 +6,9 @@ namespace Service.Command.Features.ShoppingLists;
 
 public class CreateShoppingListHandler : IRequestHandler<CreateShoppingListCommand, Guid>
 {
-    private readonly ShoppingDbContext _context;
+    private readonly IShoppingDbContext _context;
 
-    public CreateShoppingListHandler(ShoppingDbContext context) => _context = context;
+    public CreateShoppingListHandler(IShoppingDbContext context) => _context = context;
 
     public async Task<Guid> Handle(CreateShoppingListCommand request, CancellationToken cancellationToken)
     {

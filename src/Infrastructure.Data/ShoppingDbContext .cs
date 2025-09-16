@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Data;
 
-public class ShoppingDbContext : DbContext
+public class ShoppingDbContext : DbContext, IShoppingDbContext
 {
     public ShoppingDbContext(DbContextOptions<ShoppingDbContext> options) : base(options) { }
 
