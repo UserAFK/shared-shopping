@@ -2,7 +2,7 @@
 
 namespace Core.Domain.Entities
 {
-    public class Item: EntityBase
+    public class Item : EntityBase
     {
         [Column(TypeName = "varchar(200)")]
         public string Name { get; set; } = null!;

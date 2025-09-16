@@ -5,6 +5,12 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddOpenApi();
 builder.Services.AddSwaggerGen();
+builder.Services.AddExceptionHandler(x => x.ExceptionHandler = async context =>
+{
+    context.Response.ContentType = "application/json";
+    context.Response.StatusCode = 500;
+    await context.Response.WriteAsJsonAsync(new { Error = "An unexpected error occurred." });
+});
 builder.Services.AddDbContext<IShoppingDbContext, ShoppingDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddMediatR(cfg =>
@@ -12,6 +18,7 @@ builder.Services.AddMediatR(cfg =>
 builder.Services.AddControllers();
 
 var app = builder.Build();
+app.UseExceptionHandler();
 app.MapControllers();
 
 if (app.Environment.IsDevelopment())
@@ -19,7 +26,8 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
     app.UseSwagger();
     app.UseSwaggerUI();
-}else
+}
+else
 {
     app.UseHttpsRedirection();
     app.UseHsts();
