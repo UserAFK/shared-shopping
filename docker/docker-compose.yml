@@ -60,10 +60,10 @@ services:
 
   command-service:
     build:
-      context: ../src/Service.Command
-      dockerfile: Dockerfile
+      context: ../src
+      dockerfile: Dockerfile.Command
     depends_on: [sqlserver, kafka, redis]
-    ports: ["5001:80"]
+    ports: ["5001:8080"]
 
   query-service:
     build:
