@@ -1,5 +1,3 @@
-using Worker.PriceFetcher;
-
 var builder = Host.CreateApplicationBuilder(args);
 builder.Services.AddHostedService<Worker.PriceFetcher.Worker>();
 

@@ -11,7 +11,7 @@ public class CommandTests
     private const string groceriesListId = "ae43a1b0-cc04-4bfd-86ca-db901475837a";
     private const string electronicsListId = "ae43a1b0-cc04-4bfd-86ca-db901475837b";
 
-    private async Task AddShoppingLists(ShoppingDbContext context)
+    private static async Task AddShoppingLists(ShoppingDbContext context)
     {
         var shoppingLists = new List<ShoppingList>
             {
@@ -32,10 +32,8 @@ public class CommandTests
         using (var context = new ShoppingDbContext(options))
         {
             // Arrange
-            await AddShoppingLists(context);
-
             var shoppingListCommand = new CreateShoppingListCommand("Home");
-            
+
 
             var service = new CreateShoppingListHandler(context);
 
@@ -44,7 +42,7 @@ public class CommandTests
 
             // Assert
             Assert.True(result != Guid.Empty);
-            Assert.Equal(3, context.ShoppingLists.Count());
+            Assert.Equal(1, context.ShoppingLists.Count());
 
             context.Database.EnsureDeleted();
         }
@@ -98,7 +96,7 @@ public class CommandTests
             var result = () => service.Handle(shoppingListCommand, CancellationToken.None);
 
             // Assert
-            await Assert.ThrowsAsync< ArgumentException>( result);
+            await Assert.ThrowsAsync<ArgumentException>(result);
 
             context.Database.EnsureDeleted();
         }
