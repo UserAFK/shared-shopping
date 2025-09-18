@@ -25,7 +25,7 @@ public class CommandTests
 
         var items = new List<Item>
             {
-                new () 
+                new ()
                 {
                     Id = Guid.Parse(groceriesListItemId),
                     Name = "Orange",
