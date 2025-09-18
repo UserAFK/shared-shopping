@@ -18,4 +18,18 @@ public class ShoppingListsController : ControllerBase
         var id = await _mediator.Send(command);
         return Ok(new { Id = id });
     }
+
+    [HttpPut]
+    public async Task<IActionResult> Update([FromBody] UpdateShoppingListCommand command)
+    {
+        var id = await _mediator.Send(command);
+        return Ok(new { Id = id });
+    }
+
+    [HttpDelete]
+    public async Task<IActionResult> Delete([FromBody] DeleteShoppingListCommand command)
+    {
+        var id = await _mediator.Send(command);
+        return Ok(new { Id = id });
+    }
 }

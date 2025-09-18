@@ -18,4 +18,18 @@ public class ItemController : ControllerBase
         var id = await _mediator.Send(command);
         return Ok(new { Id = id });
     }
+
+    [HttpPut]
+    public async Task<IActionResult> Update([FromBody] UpdateItemCommand command)
+    {
+        var id = await _mediator.Send(command);
+        return Ok(new { Id = id });
+    }
+
+    [HttpDelete]
+    public async Task<IActionResult> Delete([FromBody] DeleteItemCommand command)
+    {
+        var id = await _mediator.Send(command);
+        return Ok(new { Id = id });
+    }
 }

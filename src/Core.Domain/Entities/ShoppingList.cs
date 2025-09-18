@@ -3,6 +3,6 @@
     public class ShoppingList : EntityBase
     {
         public string Name { get; set; } = null!;
-        public ICollection<Item> Items { get; set; } = [];
+        public ICollection<Item>? Items { get; set; } = [];
     }
 }
