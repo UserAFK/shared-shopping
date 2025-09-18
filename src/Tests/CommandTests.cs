@@ -109,6 +109,53 @@ public class CommandTests
     }
 
     [Fact]
+    public async Task DeleteShoppingListsCommandAsync_ReturnsShoppingListId()
+    {
+        var options = CreateDbContextOptions();
+
+        using (var context = new ShoppingDbContext(options))
+        {
+            // Arrange
+            await AddShoppingLists(context);
+            var shoppingListCommand = new DeleteShoppingListCommand(Guid.Parse(electronicsListId));
+
+            var service = new DeleteShoppingListHandler(context);
+
+            // Act
+            var result = await service.Handle(shoppingListCommand, CancellationToken.None);
+
+            // Assert
+            Assert.True(result == Guid.Parse(electronicsListId));
+            Assert.Equal(1, context.ShoppingLists.Count());
+
+            context.Database.EnsureDeleted();
+        }
+    }
+
+    [Fact]
+    public async Task DeleteShoppingListsCommandAsync_ListDoesntExist_ThrowsError()
+    {
+        var options = CreateDbContextOptions();
+
+        using (var context = new ShoppingDbContext(options))
+        {
+            // Arrange
+            await AddShoppingLists(context);
+            var shoppingListCommand = new DeleteShoppingListCommand(Guid.NewGuid());
+
+            var service = new DeleteShoppingListHandler(context);
+
+            // Act
+            var result = () => service.Handle(shoppingListCommand, CancellationToken.None);
+
+            // Assert
+            await Assert.ThrowsAsync<KeyNotFoundException>(result);
+
+            context.Database.EnsureDeleted();
+        }
+    }
+
+    [Fact]
     public async Task AddItemCommandAsync_ListExists_ReturnsNewItemtId()
     {
         var options = CreateDbContextOptions();
