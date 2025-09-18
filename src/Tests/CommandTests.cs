@@ -58,13 +58,13 @@ public class CommandTests
         using (var context = new ShoppingDbContext(options))
         {
             // Arrange
-            var shoppingListCommand = new CreateShoppingListCommand("Home");
+            var command = new CreateShoppingListCommand("Home");
 
 
             var service = new CreateShoppingListHandler(context);
 
             // Act
-            var result = await service.Handle(shoppingListCommand, CancellationToken.None);
+            var result = await service.Handle(command, CancellationToken.None);
 
             // Assert
             Assert.True(result != Guid.Empty);
@@ -88,12 +88,12 @@ public class CommandTests
                 Id = Guid.Parse(electronicsListId),
                 Name = "Electronics and Gadgets"
             };
-            var shoppingListCommand = new UpdateShoppingListCommand(electronicsList);
+            var command = new UpdateShoppingListCommand(electronicsList);
 
             var service = new UpdateShoppingListHandler(context);
 
             // Act
-            var result = await service.Handle(shoppingListCommand, CancellationToken.None);
+            var result = await service.Handle(command, CancellationToken.None);
 
             // Assert
             Assert.True(result == Guid.Parse(electronicsListId));
@@ -117,12 +117,12 @@ public class CommandTests
                 Id = Guid.NewGuid(),
                 Name = "Electronics and Gadgets"
             };
-            var shoppingListCommand = new UpdateShoppingListCommand(electronicsList);
+            var command = new UpdateShoppingListCommand(electronicsList);
 
             var service = new UpdateShoppingListHandler(context);
 
             // Act
-            var result = () => service.Handle(shoppingListCommand, CancellationToken.None);
+            var result = () => service.Handle(command, CancellationToken.None);
 
             // Assert
             await Assert.ThrowsAsync<KeyNotFoundException>(result);
@@ -140,12 +140,12 @@ public class CommandTests
         {
             // Arrange
             await AddShoppingListsAndItems(context);
-            var shoppingListCommand = new DeleteShoppingListCommand(Guid.Parse(electronicsListId));
+            var command = new DeleteShoppingListCommand(Guid.Parse(electronicsListId));
 
             var service = new DeleteShoppingListHandler(context);
 
             // Act
-            var result = await service.Handle(shoppingListCommand, CancellationToken.None);
+            var result = await service.Handle(command, CancellationToken.None);
 
             // Assert
             Assert.True(result == Guid.Parse(electronicsListId));
@@ -164,12 +164,12 @@ public class CommandTests
         {
             // Arrange
             await AddShoppingListsAndItems(context);
-            var shoppingListCommand = new DeleteShoppingListCommand(Guid.NewGuid());
+            var command = new DeleteShoppingListCommand(Guid.NewGuid());
 
             var service = new DeleteShoppingListHandler(context);
 
             // Act
-            var result = () => service.Handle(shoppingListCommand, CancellationToken.None);
+            var result = () => service.Handle(command, CancellationToken.None);
 
             // Assert
             await Assert.ThrowsAsync<KeyNotFoundException>(result);
@@ -190,12 +190,12 @@ public class CommandTests
             // Arrange
             await AddShoppingListsAndItems(context);
 
-            var shoppingListCommand = new CreateItemCommand("Lamp", 1, Guid.Parse(electronicsListId));
+            var command = new CreateItemCommand("Lamp", 1, Guid.Parse(electronicsListId));
 
             var service = new CreateItemHandler(context);
 
             // Act
-            var result = await service.Handle(shoppingListCommand, CancellationToken.None);
+            var result = await service.Handle(command, CancellationToken.None);
 
             // Assert
             Assert.True(result != Guid.Empty);
@@ -216,12 +216,12 @@ public class CommandTests
             // Arrange
             await AddShoppingListsAndItems(context);
 
-            var shoppingListCommand = new CreateItemCommand("Lamp", 1, Guid.NewGuid());
+            var command = new CreateItemCommand("Lamp", 1, Guid.NewGuid());
 
             var service = new CreateItemHandler(context);
 
             // Act
-            var result = () => service.Handle(shoppingListCommand, CancellationToken.None);
+            var result = () => service.Handle(command, CancellationToken.None);
 
             // Assert
             await Assert.ThrowsAsync<ArgumentException>(result);
@@ -246,12 +246,12 @@ public class CommandTests
                 Quantity = 2,
                 ShoppingListId = Guid.Parse(electronicsListId)
             };
-            var itemCommand = new UpdateItemCommand(item);
+            var command = new UpdateItemCommand(item);
 
             var service = new UpdateItemHandler(context);
 
             // Act
-            var result = await service.Handle(itemCommand, CancellationToken.None);
+            var result = await service.Handle(command, CancellationToken.None);
 
             // Assert
             Assert.True(result == Guid.Parse(electronicsListItemId));
@@ -278,12 +278,12 @@ public class CommandTests
                 Quantity = 2,
                 ShoppingListId = Guid.NewGuid()
             };
-            var shoppingListCommand = new UpdateItemCommand(item);
+            var command = new UpdateItemCommand(item);
 
             var service = new UpdateItemHandler(context);
 
             // Act
-            var result = () => service.Handle(shoppingListCommand, CancellationToken.None);
+            var result = () => service.Handle(command, CancellationToken.None);
 
             // Assert
             await Assert.ThrowsAsync<ArgumentException>(result);
@@ -308,12 +308,12 @@ public class CommandTests
                 Quantity = 2,
                 ShoppingListId = Guid.Parse(electronicsListId)
             };
-            var shoppingListCommand = new UpdateItemCommand(item);
+            var command = new UpdateItemCommand(item);
 
             var service = new UpdateItemHandler(context);
 
             // Act
-            var result = () => service.Handle(shoppingListCommand, CancellationToken.None);
+            var result = () => service.Handle(command, CancellationToken.None);
 
             // Assert
             await Assert.ThrowsAsync<KeyNotFoundException>(result);
@@ -321,5 +321,56 @@ public class CommandTests
             context.Database.EnsureDeleted();
         }
     }
+
+    [Fact]
+    public async Task DeleteItemCommandAsync_ItemExists_ReturnsItemtId()
+    {
+        var options = CreateDbContextOptions();
+
+        using (var context = new ShoppingDbContext(options))
+        {
+            // Arrange
+            await AddShoppingListsAndItems(context);
+            var itemId = Guid.Parse(electronicsListItemId);
+            var command = new DeleteItemCommand(itemId);
+
+            var service = new DeleteItemHandler(context);
+
+            // Act
+            var result = await service.Handle(command, CancellationToken.None);
+
+            // Assert
+            Assert.True(result == Guid.Parse(electronicsListItemId));
+            Assert.Equal(1, context.Items.Count());
+
+            context.Database.EnsureDeleted();
+        }
+
+    }
+
+    [Fact]
+    public async Task DeleteItemCommandAsync_ItemDoenstExist_ThrowsError()
+    {
+        var options = CreateDbContextOptions();
+
+        using (var context = new ShoppingDbContext(options))
+        {
+            // Arrange
+            await AddShoppingListsAndItems(context);
+            var itemId = Guid.NewGuid();
+            var command = new DeleteItemCommand(itemId);
+
+            var service = new DeleteItemHandler(context);
+
+            // Act
+            var result = () => service.Handle(command, CancellationToken.None);
+
+            // Assert
+            await Assert.ThrowsAsync<KeyNotFoundException>(result);
+
+            context.Database.EnsureDeleted();
+        }
+    }
+
     #endregion
 }
