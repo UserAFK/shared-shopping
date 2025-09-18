@@ -22,12 +22,15 @@ public class CommandTests
         await context.SaveChangesAsync();
     }
 
+    private static DbContextOptions<ShoppingDbContext> CreateDbContextOptions()
+        => new DbContextOptionsBuilder<ShoppingDbContext>()
+                    .UseInMemoryDatabase(databaseName: "TestDb")
+                    .Options;
+
     [Fact]
     public async Task AddShoppingListsCommandAsync_ReturnsNewShoppingListId()
     {
-        var options = new DbContextOptionsBuilder<ShoppingDbContext>()
-            .UseInMemoryDatabase(databaseName: "TestDb")
-            .Options;
+        var options = CreateDbContextOptions();
 
         using (var context = new ShoppingDbContext(options))
         {
@@ -49,11 +52,66 @@ public class CommandTests
     }
 
     [Fact]
+    public async Task UpdateShoppingListsCommandAsync_ReturnsShoppingListId()
+    {
+        var options = CreateDbContextOptions();
+
+        using (var context = new ShoppingDbContext(options))
+        {
+            // Arrange
+            await AddShoppingLists(context);
+            var electronicsList = new ShoppingList
+            {
+                Id = Guid.Parse(electronicsListId),
+                Name = "Electronics and Gadgets"
+            };
+            var shoppingListCommand = new UpdateShoppingListCommand(electronicsList);
+
+            var service = new UpdateShoppingListHandler(context);
+
+            // Act
+            var result = await service.Handle(shoppingListCommand, CancellationToken.None);
+
+            // Assert
+            Assert.True(result == Guid.Parse(electronicsListId));
+            Assert.Equal(2, context.ShoppingLists.Count());
+
+            context.Database.EnsureDeleted();
+        }
+    }
+
+    [Fact]
+    public async Task UpdateShoppingListsCommandAsync_ListDoesntExist_ThrowsError()
+    {
+        var options = CreateDbContextOptions();
+
+        using (var context = new ShoppingDbContext(options))
+        {
+            // Arrange
+            await AddShoppingLists(context);
+            var electronicsList = new ShoppingList
+            {
+                Id = Guid.NewGuid(),
+                Name = "Electronics and Gadgets"
+            };
+            var shoppingListCommand = new UpdateShoppingListCommand(electronicsList);
+
+            var service = new UpdateShoppingListHandler(context);
+
+            // Act
+            var result = () => service.Handle(shoppingListCommand, CancellationToken.None);
+
+            // Assert
+            await Assert.ThrowsAsync<KeyNotFoundException>(result);
+
+            context.Database.EnsureDeleted();
+        }
+    }
+
+    [Fact]
     public async Task AddItemCommandAsync_ListExists_ReturnsNewItemtId()
     {
-        var options = new DbContextOptionsBuilder<ShoppingDbContext>()
-            .UseInMemoryDatabase(databaseName: "TestDb")
-            .Options;
+        var options = CreateDbContextOptions();
 
         using (var context = new ShoppingDbContext(options))
         {
@@ -77,11 +135,9 @@ public class CommandTests
     }
 
     [Fact]
-    public async Task AddItemCommandAsync_ListDoenstExist_ReturnsNewItemtId()
+    public async Task AddItemCommandAsync_ListDoenstExist_ThrowsError()
     {
-        var options = new DbContextOptionsBuilder<ShoppingDbContext>()
-            .UseInMemoryDatabase(databaseName: "TestDb")
-            .Options;
+        var options = CreateDbContextOptions();
 
         using (var context = new ShoppingDbContext(options))
         {
