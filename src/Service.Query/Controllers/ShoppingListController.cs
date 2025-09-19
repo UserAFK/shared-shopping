@@ -21,4 +21,13 @@ public class ShoppingListController: ControllerBase
         var shoppingListDto = await _mediator.Send(query);
         return Ok(shoppingListDto);
     }
+
+    [HttpGet]
+    [Route("/lists")]
+    public async Task<IActionResult> GetAllShoppingLists()
+    {
+        var query = new GetAllShoppingListsQuery(10);// Default to 10 if not specified
+        var shoppingListDto = await _mediator.Send(query);
+        return Ok(shoppingListDto);
+    }
 }
