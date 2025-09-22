@@ -1,5 +1,13 @@
 using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
+
+
+Log.Logger = new LoggerConfiguration()
+    .Enrich.FromLogContext()
+    .WriteTo.Console()
+    .WriteTo.Seq("http://localhost:5341") // Seq container address
+    .CreateLogger();
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,6 +24,7 @@ builder.Services.AddDbContext<IShoppingDbContext, ShoppingDbContext>(options =>
 builder.Services.AddMediatR(cfg =>
     cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
 builder.Services.AddControllers();
+builder.Host.UseSerilog();
 
 var app = builder.Build();
 app.UseExceptionHandler();
