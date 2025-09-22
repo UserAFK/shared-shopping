@@ -3,4 +3,4 @@ using Service.Query.DTO;
 
 namespace Service.Query.Features.ShoppingList;
 
-public record GetShoppingListByIdQuery(Guid ListId) : IRequest<ShoppingListDto>;
+public record GetAllListsQuery(int? Count) : IRequest<ICollection<ListDto>>;

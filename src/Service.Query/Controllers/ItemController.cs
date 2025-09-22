@@ -6,11 +6,11 @@ namespace Service.Query.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class ShoppingItemController : ControllerBase
+public class ItemController : ControllerBase
 {
     private readonly IMediator _mediator;
 
-    public ShoppingItemController(IMediator mediator) => _mediator = mediator;
+    public ItemController(IMediator mediator) => _mediator = mediator;
 
     [HttpGet]
     [Route("/items")]

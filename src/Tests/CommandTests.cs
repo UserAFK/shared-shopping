@@ -58,10 +58,10 @@ public class CommandTests
         using (var context = new ShoppingDbContext(options))
         {
             // Arrange
-            var command = new CreateShoppingListCommand("Home");
+            var command = new CreateListCommand("Home");
 
 
-            var service = new CreateShoppingListHandler(context);
+            var service = new CreateListHandler(context);
 
             // Act
             var result = await service.Handle(command, CancellationToken.None);
@@ -88,9 +88,9 @@ public class CommandTests
                 Id = Guid.Parse(electronicsListId),
                 Name = "Electronics and Gadgets"
             };
-            var command = new UpdateShoppingListCommand(electronicsList);
+            var command = new UpdateListCommand(electronicsList);
 
-            var service = new UpdateShoppingListHandler(context);
+            var service = new UpdateListHandler(context);
 
             // Act
             var result = await service.Handle(command, CancellationToken.None);
@@ -117,9 +117,9 @@ public class CommandTests
                 Id = Guid.NewGuid(),
                 Name = "Electronics and Gadgets"
             };
-            var command = new UpdateShoppingListCommand(electronicsList);
+            var command = new UpdateListCommand(electronicsList);
 
-            var service = new UpdateShoppingListHandler(context);
+            var service = new UpdateListHandler(context);
 
             // Act
             var result = () => service.Handle(command, CancellationToken.None);
@@ -140,9 +140,9 @@ public class CommandTests
         {
             // Arrange
             await AddShoppingListsAndItems(context);
-            var command = new DeleteShoppingListCommand(Guid.Parse(electronicsListId));
+            var command = new DeleteListCommand(Guid.Parse(electronicsListId));
 
-            var service = new DeleteShoppingListHandler(context);
+            var service = new DeleteListHandler(context);
 
             // Act
             var result = await service.Handle(command, CancellationToken.None);
@@ -164,9 +164,9 @@ public class CommandTests
         {
             // Arrange
             await AddShoppingListsAndItems(context);
-            var command = new DeleteShoppingListCommand(Guid.NewGuid());
+            var command = new DeleteListCommand(Guid.NewGuid());
 
-            var service = new DeleteShoppingListHandler(context);
+            var service = new DeleteListHandler(context);
 
             // Act
             var result = () => service.Handle(command, CancellationToken.None);

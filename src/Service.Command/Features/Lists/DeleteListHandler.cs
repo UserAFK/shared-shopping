@@ -3,13 +3,13 @@ using MediatR;
 
 namespace Service.Command.Features.ShoppingLists;
 
-public class DeleteShoppingListHandler : IRequestHandler<DeleteShoppingListCommand, Guid>
+public class DeleteListHandler : IRequestHandler<DeleteListCommand, Guid>
 {
     private readonly IShoppingDbContext _context;
 
-    public DeleteShoppingListHandler(IShoppingDbContext context) => _context = context;
+    public DeleteListHandler(IShoppingDbContext context) => _context = context;
 
-    public async Task<Guid> Handle(DeleteShoppingListCommand request, CancellationToken cancellationToken)
+    public async Task<Guid> Handle(DeleteListCommand request, CancellationToken cancellationToken)
     {
         var shoppingList = _context.ShoppingLists
             .FirstOrDefault(l => l.Id == request.ShoppingListId)

@@ -9,9 +9,9 @@ namespace Service.Query.Mapping
         {
             services.AddAutoMapper(c =>
             {
-                c.CreateMap<ShoppingList, ShoppingListDto>();
-                c.CreateMap<Item, ShoppingItemDto>();
-                c.CreateMap<Item, ShoppingItemDetailedDto>();
+                c.CreateMap<ShoppingList, ListDto>();
+                c.CreateMap<Item, ItemDto>();
+                c.CreateMap<Item, ItemDetailedDto>();
             });
             return services;
         }
