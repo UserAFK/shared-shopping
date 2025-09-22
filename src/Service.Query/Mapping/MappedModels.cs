@@ -11,6 +11,7 @@ namespace Service.Query.Mapping
             {
                 c.CreateMap<ShoppingList, ShoppingListDto>();
                 c.CreateMap<Item, ShoppingItemDto>();
+                c.CreateMap<Item, ShoppingItemDetailedDto>();
             });
             return services;
         }

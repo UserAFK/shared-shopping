@@ -22,7 +22,7 @@ public class GetShoppingListByIdHandler : IRequestHandler<GetShoppingListByIdQue
         var list = await _context.ShoppingLists
             .Include(l => l.Items)
             .AsNoTracking()
-            .FirstOrDefaultAsync(l => l.Id == request.Id, cancellationToken);
+            .FirstOrDefaultAsync(l => l.Id == request.ListId, cancellationToken);
         return _mapper.Map<ShoppingListDto>(list);
     }
 }

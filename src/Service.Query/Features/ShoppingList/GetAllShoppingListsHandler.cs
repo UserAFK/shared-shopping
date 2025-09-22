@@ -23,7 +23,7 @@ public class GetAllShoppingListsHandler : IRequestHandler<GetAllShoppingListsQue
             .Include(l => l.Items)
             .AsNoTracking()
             .Take(request.Count ?? 100)
-            .OrderBy(l=>l.Name)
+            .OrderBy(l => l.Name)
             .ToListAsync(cancellationToken);
         return _mapper.Map<ICollection<ShoppingListDto>>(list);
     }
